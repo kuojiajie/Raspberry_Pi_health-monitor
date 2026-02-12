@@ -1,0 +1,35 @@
+# systemd/health-monitor.service
+# Copy to: /etc/systemd/system/health-monitor.service
+
+[Unit]
+Description=Health Monitor (network/cpu/memory/disk)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Run as a non-root user (recommended)
+User=your_user
+Group=your_user
+
+# Project working directory (optional, but nice)
+WorkingDirectory=/home/your_user/projects/health-monitor
+
+# Load environment variables
+EnvironmentFile=/home/your_user/projects/health-monitor/config/health-monitor.env
+
+# Start script
+ExecStart=/bin/bash /home/your_user/projects/health-monitor/daemon/health_monitor.sh
+
+# Restart policy
+Restart=always
+RestartSec=5
+
+# Logging -> journald (default, but we state it clearly)
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

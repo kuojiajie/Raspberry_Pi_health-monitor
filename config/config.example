@@ -1,0 +1,25 @@
+# config/config.example
+# Health Monitor configuration (copy to config.sh)
+
+# --- basic ---
+PING_TARGET="8.8.8.8"
+CHECK_INTERVAL=30
+
+# --- thresholds ---
+CPU_LOAD_WARN=1.50
+CPU_LOAD_ERROR=3.00
+
+MEM_AVAIL_WARN_PCT=15
+MEM_AVAIL_ERROR_PCT=5
+
+DISK_USED_WARN_PCT=80
+DISK_USED_ERROR_PCT=90
+
+# --- logging ---
+# Recommended (systemd + production):
+LOG_FILE="/var/log/health-monitor/health-monitor.log"
+
+# Alternative (manual run / local dev):
+# PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# LOG_FILE="$PROJECT_ROOT/logs/health-monitor.log"
+

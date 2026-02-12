@@ -1,0 +1,16 @@
+# local env (do not commit)
+config/health-monitor.env
+config/config.sh
+
+# logs
+logs/*.log
+*.log
+
+# vim / temp
+*.swp
+*.bak
+*.pid
+
+# --- OS ---
+.DS_Store
+
