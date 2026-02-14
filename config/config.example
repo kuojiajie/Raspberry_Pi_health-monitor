@@ -6,12 +6,23 @@ PING_TARGET="8.8.8.8"
 CHECK_INTERVAL=30
 
 # --- thresholds ---
+# Network latency thresholds (milliseconds)
+NETWORK_LATENCY_WARN_MS=200
+NETWORK_LATENCY_ERROR_MS=500
+
+# Network packet loss thresholds (percentage)
+NETWORK_PACKET_LOSS_WARN_PCT=10
+NETWORK_PACKET_LOSS_ERROR_PCT=30
+
+# CPU load thresholds
 CPU_LOAD_WARN=1.50
 CPU_LOAD_ERROR=3.00
 
+# Memory availability thresholds (percentage)
 MEM_AVAIL_WARN_PCT=15
 MEM_AVAIL_ERROR_PCT=5
 
+# Disk usage thresholds (percentage)
 DISK_USED_WARN_PCT=80
 DISK_USED_ERROR_PCT=90
 

@@ -39,11 +39,17 @@ while true; do
   fi
 
   # --- Network ---
-  if network_check; then
-    log_info "Network OK (target=$PING_TARGET)"
-  else
-    log_error "Network FAILED (target=$PING_TARGET)"
-  fi
+  net_rc=0
+  network_check || net_rc=$?
+  latency="$(network_latency_ms)"
+  loss="$(network_packet_loss_pct)"
+
+  case "$net_rc" in
+    0) log_info  "Network OK (latency=${latency}ms loss=${loss}% target=$PING_TARGET)" ;;
+    1) log_warn  "Network WARN (latency=${latency}ms loss=${loss}% target=$PING_TARGET)" ;;
+    2) log_error "Network ERROR (latency=${latency}ms loss=${loss}% target=$PING_TARGET)" ;;
+    *) log_error "Network UNKNOWN (rc=$net_rc latency=${latency}ms loss=${loss}% target=$PING_TARGET)" ;;
+  esac
 
   # --- CPU ---
   cpu_rc=0
