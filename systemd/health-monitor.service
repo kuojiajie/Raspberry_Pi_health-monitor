@@ -1,0 +1,35 @@
+# systemd/health-monitor.service
+# TrustMonitor BMC/ROT POC Service
+# Copy to: /etc/systemd/system/health-monitor.service
+
+[Unit]
+Description=TrustMonitor BMC/ROT POC (network/cpu/memory/disk/sensor/led)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Run as current user
+User=kuojiajie9999
+Group=kuojiajie9999
+
+# Project working directory
+WorkingDirectory=/home/kuojiajie9999/projects/Raspberry_Pi_health-monitor
+
+# Load environment variables
+EnvironmentFile=/home/kuojiajie9999/projects/Raspberry_Pi_health-monitor/config/health-monitor.env
+
+# Start script
+ExecStart=/bin/bash /home/kuojiajie9999/projects/Raspberry_Pi_health-monitor/daemon/health_monitor.sh
+
+# Restart policy
+Restart=always
+RestartSec=5
+
+# Logging -> journald
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

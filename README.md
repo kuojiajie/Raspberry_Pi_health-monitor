@@ -2,16 +2,18 @@
 
 A lightweight Linux / Raspberry Pi health monitoring daemon written in Bash.
 
-It monitors network, CPU, memory, and disk usage, and runs as a long-running systemd service with automatic restart support.
+It monitors network, CPU, memory, disk usage, and CPU temperature, and runs as a long-running systemd service with automatic restart support.
 
 ---
 
 ## Features
 
-- Network connectivity check (ping)
+- Network connectivity check (ping with latency and packet loss)
 - CPU load monitoring (load average)
 - Memory availability monitoring
 - Disk usage monitoring
+- CPU temperature monitoring (via `/sys/class/thermal/thermal_zone0/temp`)
+- Enhanced network error detection (connection failed, high latency, high packet loss)
 - Modular check architecture
 - systemd integration with auto-restart
 - Non-root service execution
@@ -38,7 +40,8 @@ health-monitor/
 │   ├── network_check.sh
 │   ├── cpu_check.sh
 │   ├── memory_check.sh
-│   └── disk_check.sh
+│   ├── disk_check.sh
+│   └── cpu_temp_check.sh
 │
 ├── systemd/
 │   └── health-monitor.service.example
@@ -90,6 +93,10 @@ MEM_AVAIL_ERROR_PCT=5
 # Disk usage thresholds (percentage)
 DISK_USED_WARN_PCT=80
 DISK_USED_ERROR_PCT=90
+
+# CPU temperature thresholds (Celsius)
+CPU_TEMP_WARN=65
+CPU_TEMP_ERROR=75
 ```
 
 No `export` keyword required.
@@ -115,7 +122,11 @@ Log format:
 Example:
 
 ```text
-[2026-02-10 19:53:29] [INFO] CPU OK (load1=0.05)
+[2026-02-15 09:58:59] [INFO] Network OK (target=8.8.8.8 latency=19.047ms loss=0%)
+[2026-02-15 09:58:59] [INFO] CPU OK (load1=0.15)
+[2026-02-15 09:58:59] [INFO] Memory OK (avail=86%)
+[2026-02-15 09:58:59] [INFO] Disk OK (used=18%)
+[2026-02-15 09:58:59] [INFO] CPU Temperature OK (temp=55°C)
 ```
 
 ---

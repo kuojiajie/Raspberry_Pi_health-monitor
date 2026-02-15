@@ -51,15 +51,48 @@ network_check() {
     fi
     
     # 檢查封包遺失率閾值
-    if (( loss >= err_loss )); then
+    if (( $(echo "$loss >= $err_loss" | bc -l 2>/dev/null || echo "0") )); then
         return 2  # ERROR - 封包遺失過高
     fi
     
-    if (( loss >= warn_loss )); then
+    if (( $(echo "$loss >= $warn_loss" | bc -l 2>/dev/null || echo "0") )); then
         return 1  # WARN - 封包遺失偏高
     fi
     
     return 0  # OK
+}
+
+# 提供錯誤類型給其他腳本使用
+network_error_type() {
+    local latency loss warn_latency err_latency warn_loss err_loss
+    
+    warn_latency="${NETWORK_LATENCY_WARN_MS:-200}"
+    err_latency="${NETWORK_LATENCY_ERROR_MS:-500}"
+    warn_loss="${NETWORK_PACKET_LOSS_WARN_PCT:-10}"
+    err_loss="${NETWORK_PACKET_LOSS_ERROR_PCT:-30}"
+    
+    latency="$(network_latency_ms)"
+    loss="$(network_packet_loss_pct)"
+    
+    # 如果 ping 完全失敗（延遲為 0 且遺失率為 0）
+    if [[ "$latency" == "0" && "$loss" == "0" ]]; then
+        echo "connection_failed"
+        return
+    fi
+    
+    # 檢查延遲閾值
+    if (( $(echo "$latency >= $err_latency" | bc -l 2>/dev/null || echo "0") )); then
+        echo "high_latency"
+        return
+    fi
+    
+    # 檢查封包遺失率閾值
+    if (( $(echo "$loss >= $err_loss" | bc -l 2>/dev/null || echo "0") )); then
+        echo "high_packet_loss"
+        return
+    fi
+    
+    echo "unknown"
 }
 
 # 直接執行時方便測試
@@ -68,7 +101,8 @@ if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
     rc=$?
     latency="$(network_latency_ms)"
     loss="$(network_packet_loss_pct)"
-    echo "network_latency=${latency}ms packet_loss=${loss}% rc=$rc"
+    error_type=$(network_error_type)
+    echo "network_latency=${latency}ms packet_loss=${loss}% rc=$rc error_type=${error_type}"
     exit $rc
 fi
 
